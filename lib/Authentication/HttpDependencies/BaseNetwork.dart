@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class BaseNetwork {
-  static final String baseUrl = "https://express-crud-cj3ez54bpa-et.a.run.app/";
+  // static final String baseUrl = "https://express-crud-cj3ez54bpa-et.a.run.app/";
+  static final String baseUrl = "http://localhost:3005";
 
   static Future<Map<String, dynamic>> login(
       String partUrl, Map<String, dynamic> reqBody) async {

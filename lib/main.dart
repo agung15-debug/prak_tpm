@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tugas_akhir_praktpm/Authentication/login.dart';
+import 'package:tugas_akhir_praktpm/Music/Models/track.dart';
 import 'package:tugas_akhir_praktpm/Music/music.dart';
 import 'package:tugas_akhir_praktpm/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  Hive.initFlutter();
+  Hive.registerAdapter(TrackDetailAdapter());
+
   runApp(const MyApp());
 }
 

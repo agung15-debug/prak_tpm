@@ -1,6 +1,9 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
+part 'track.g.dart';
 
+@HiveType(typeId: 1)
 class TrackModel {
+  @HiveField(0)
   final Message? message;
 
   TrackModel({
@@ -15,7 +18,9 @@ class TrackModel {
       };
 }
 
+@HiveType(typeId: 2)
 class Message {
+  @HiveField(1)
   final Body? body;
 
   Message({required this.body});
@@ -25,7 +30,9 @@ class Message {
 }
 
 class Body {
+  @HiveField(2)
   final List<Track> trackList;
+  @HiveField(3)
   Body({required this.trackList});
 
   Body.fromJson(Map<String, dynamic> json)
@@ -37,9 +44,11 @@ class Body {
       };
 }
 
+@HiveType(typeId: 3)
 class Track {
+  @HiveField(4)
   final TrackDetail trackDetail;
-
+  @HiveField(5)
   Track({required this.trackDetail});
 
   Track.fromJson(Map<String, dynamic> json)
@@ -50,11 +59,17 @@ class Track {
       };
 }
 
+@HiveType(typeId: 4)
 class TrackDetail {
+  @HiveField(6)
   final String trackId;
+  @HiveField(7)
   final String trackName;
+  @HiveField(8)
   final String artistId;
+  @HiveField(9)
   final String artistName;
+  @HiveField(10)
   final bool hasLyrics;
 
   TrackDetail({

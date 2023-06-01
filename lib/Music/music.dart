@@ -1,7 +1,11 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:tugas_akhir_praktpm/Music/HttpDependencies/ApiDataSource.dart';
 import 'package:tugas_akhir_praktpm/Music/Models/track.dart';
 import 'package:tugas_akhir_praktpm/Music/musicDetail.dart';
+import 'package:tugas_akhir_praktpm/local_storage/local_storage.dart';
 
 class MusicLyrics extends StatefulWidget {
   const MusicLyrics({super.key});
@@ -15,10 +19,25 @@ class _MusicLyricsState extends State<MusicLyrics> {
   String search = "";
   String terms = "";
   List<bool> _selections = [true, false];
+  LocalStorage localStorage = LocalStorage();
+  late Box box;
+  bool isFavorite = false;
+
+  void getInit() async {
+    box = await localStorage.openBox();
+    print(await localStorage.getFavorite(box));
+  }
+
+  @override
+  void initState() {
+    getInit();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF5F0BB),
       body: Container(
           child: Column(
         children: [
@@ -32,8 +51,10 @@ class _MusicLyricsState extends State<MusicLyrics> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: Color(0xFF73A9AD)),
                 suffix: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF73A9AD)),
                   child: Text("Search"),
                   onPressed: () {
                     setState(() {
@@ -41,7 +62,17 @@ class _MusicLyricsState extends State<MusicLyrics> {
                     });
                   },
                 ),
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        BorderSide(color: Color(0xFF73A9AD), width: 2.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        BorderSide(color: Color(0xFF73A9AD), width: 2.0)),
                 hintText: 'Enter a search term',
               ),
             ),
@@ -50,6 +81,9 @@ class _MusicLyricsState extends State<MusicLyrics> {
             height: 15,
           ),
           ToggleButtons(
+              color: Color(0xFF73A9AD),
+              selectedBorderColor: Color(0xFF73A9AD),
+              selectedColor: Colors.white,
               children: [
                 Container(
                   padding: EdgeInsets.all(10),
@@ -128,32 +162,77 @@ class _MusicLyricsState extends State<MusicLyrics> {
                   builder: (context) =>
                       DetailLyric(track: list[index].trackDetail),
                 )),
-            child: Card(
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child: Image.network(
-                        'https://w7.pngwing.com/pngs/250/419/png-transparent-musical-note-song-rectangle-logo-number-thumbnail.png'),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        list[index].trackDetail.trackName,
-                        style: TextStyle(fontSize: 12),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+              child: Card(
+                color: Color(0xFFB3C890),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child: Image.asset(
+                              'assets/images/icon_music.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Container(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(list[index].trackDetail.trackName,
+                                  style: TextStyle(fontSize: 12),
+                                  overflow: TextOverflow.ellipsis),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                width: 200,
+                                child: Text(list[index].trackDetail.artistName,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          )),
+                        ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(list[index].trackDetail.artistName),
-                    ],
-                  ))
-                ],
+                    ),
+                    IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            if (localStorage
+                                .getFavorite(box)
+                                .contains(list[index].trackDetail)) {
+                              localStorage.removeFromFavorite(
+                                  box, list[index].trackDetail);
+                              SnackBar snackBar = SnackBar(
+                                content: Text("Removed from favorite"),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              localStorage.addToFavorite(
+                                  box, list[index].trackDetail);
+                              SnackBar snackBar = SnackBar(
+                                content: Text("Add to favorite"),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            }
+                          });
+                        },
+                        icon: Icon(localStorage
+                                .getFavorite(box)
+                                .contains(list[index].trackDetail)
+                            ? Icons.favorite
+                            : Icons.favorite_border))
+                  ],
+                ),
               ),
             ),
           );

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tugas_akhir_praktpm/Authentication/Models/UserModel.dart';
 import 'package:tugas_akhir_praktpm/Authentication/logout.dart';
+import 'package:tugas_akhir_praktpm/Music/Models/track.dart';
 import 'package:tugas_akhir_praktpm/Music/music.dart';
+import 'package:tugas_akhir_praktpm/local_storage/local_storage.dart';
+import 'favorite.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -22,9 +26,19 @@ class _HomeState extends State<Home> {
   String? email = "";
   String? accessToken = "";
 
+  LocalStorage localStorage = LocalStorage();
+  late Box box;
+  late List<TrackDetail> tracks;
+
   List<Widget> menu = [
     MusicLyrics(),
+    Favorite(),
   ];
+
+  void gitInit() async {
+    box = await localStorage.openBox();
+    tracks = localStorage.getFavorite(box);
+  }
 
   @override
   void initState() {
@@ -36,37 +50,42 @@ class _HomeState extends State<Home> {
         accessToken = value.getString('accessToken');
       });
     });
+    gitInit();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF73A9AD),
         title: Text("Tugas Akhir TPM"),
       ),
       body: menu[_selectedOptions],
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'Lirik'),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
-        ],
-        onTap: (index) {
-          setState(() {
-            _previousSelection = _selectedOptions;
-            _selectedOptions = index;
+          backgroundColor: Color(0xFF73A9AD),
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.music_note), label: 'Lirik'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.favorite), label: 'Favorit'),
+            BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
+          ],
+          onTap: (index) {
+            setState(() {
+              _previousSelection = _selectedOptions;
+              _selectedOptions = index;
 
-            if (_selectedOptions == 1) {
-              _selectedOptions = _previousSelection;
+              if (_selectedOptions == 2) {
+                _selectedOptions = _previousSelection;
 
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Logout()));
-            }
-          });
-        },
-        selectedItemColor: Colors.blue,
-        currentIndex: _selectedOptions,
-        unselectedItemColor: Colors.grey,
-      ),
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Logout()));
+              }
+            });
+          },
+          selectedItemColor: Color(0xFFF5F0BB),
+          currentIndex: _selectedOptions,
+          unselectedItemColor: Colors.white),
       drawer: _buildDrawer(),
     );
   }
