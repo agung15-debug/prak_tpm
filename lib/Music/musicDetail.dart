@@ -18,7 +18,11 @@ class _DetailLyricState extends State<DetailLyric> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        backgroundColor: Color(0xFFF5F0BB),
+        appBar: AppBar(
+          backgroundColor: Color(0xFFB3C890),
+          title: Text("Lyrics"),
+        ),
         body: Center(
           child: FutureBuilder(
             future: ApiDataSource.instance.getSongLyric(widget.track.trackId),
@@ -62,27 +66,31 @@ class _DetailLyricState extends State<DetailLyric> {
           child: Column(children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              child: Image.network(
-                'https://w7.pngwing.com/pngs/250/419/png-transparent-musical-note-song-rectangle-logo-number-thumbnail.png',
-              ),
+              child: Image.asset("assets/images/icon_music.png",
+                  fit: BoxFit.cover),
             ),
             Text(
               widget.track.trackName,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.black),
               textAlign: TextAlign.center,
             ),
             Text(
               widget.track.artistName,
-              style: TextStyle(fontWeight: FontWeight.w100, fontSize: 15),
+              style: TextStyle(
+                  fontWeight: FontWeight.w100,
+                  fontSize: 15,
+                  color: Colors.black),
               textAlign: TextAlign.center,
             ),
             SizedBox(
               height: 20,
             ),
-            Text(
-              lyric.lyricsBody,
-              textAlign: TextAlign.center,
-            ),
+            Text(lyric.lyricsBody,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black)),
             SizedBox(
               height: 20,
             ),
